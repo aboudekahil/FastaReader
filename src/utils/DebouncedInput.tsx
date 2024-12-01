@@ -7,6 +7,7 @@ import {
 } from "react";
 import { useAtom, useAtomValue } from "jotai/index";
 import { genomeAnalysisAtom, indxBeginAtom } from "../jotai/states.ts";
+import { Flip, toast } from "react-toastify";
 
 export const DebouncedInput: FunctionComponent<HTMLProps<HTMLInputElement>> = (
   props,
@@ -42,6 +43,17 @@ export const DebouncedInput: FunctionComponent<HTMLProps<HTMLInputElement>> = (
     }
     const value = parseInt(svalue);
     if (isNaN(value)) {
+      toast.error("Input given Not a Number", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
       throw new Error("Invalid value");
     }
 

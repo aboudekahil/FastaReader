@@ -1,3 +1,5 @@
+import { Flip, toast } from "react-toastify";
+
 const ALLOWED_GENOMES = new Set("ATGC-NUKSRYMWBDHV".split(""));
 
 export class Genome {
@@ -11,6 +13,17 @@ export class Genome {
 
   set title(title: string) {
     if (title === undefined || title === "" || title === null) {
+      toast.error("Missing title", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
       throw new Error("Missing title");
     }
     this._title = title;

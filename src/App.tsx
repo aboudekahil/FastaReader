@@ -4,10 +4,11 @@ import { FastaReader } from "./fasta/FastaReader.ts";
 import { GenomeAnalysis } from "./fasta/GenomeAnalysis.ts";
 import { useSetAtom } from "jotai/react";
 import { genomeAnalysisAtom, indxBeginAtom } from "./jotai/states.ts";
+import { Flip, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const setGenome = useSetAtom(genomeAnalysisAtom);
-  // const setIndxBegin = useSetAtom(indxBeginAtom);
   const setIndxBegin = useSetAtom(indxBeginAtom);
 
   const formOnSubmit = useCallback(
@@ -21,7 +22,18 @@ export default function App() {
         !fileInput.files ||
         (fileInput.files && fileInput.files.length === 0)
       ) {
-        throw new Error("No files selected");
+        toast.error("No file selected", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Flip,
+        });
+        return;
       }
 
       const file = fileInput.files[0];
@@ -33,12 +45,37 @@ export default function App() {
         if (reader.result) {
           const result = reader.result as string;
           setIndxBegin(0);
-          setGenome(new GenomeAnalysis(FastaReader(result)));
+          try {
+            setGenome(new GenomeAnalysis(FastaReader(result)));
+          } catch (e) {
+            toast.error("Invalid fasta format.", {
+              position: "top-center",
+              autoClose: 1000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Flip,
+            });
+            throw e;
+          }
         }
       };
 
-      reader.onerror = (e) => {
-        throw e;
+      reader.onerror = () => {
+        toast.error("Couldn't read file uploaded", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Flip,
+        });
       };
     },
     [setGenome, setIndxBegin],
@@ -46,6 +83,20 @@ export default function App() {
 
   return (
     <main className="flex flex-col items-center justify-center w-full h-full">
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        limit={2}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Flip}
+      />
       <form onSubmit={formOnSubmit}>
         <input
           type={"file"}

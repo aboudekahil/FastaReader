@@ -1,3 +1,5 @@
+import { Flip, toast } from "react-toastify";
+
 export type consensus_fasta_genomes = keyof typeof ConsensusUtil.FASTA_MAPPINGS;
 
 export class ConsensusUtil {
@@ -55,7 +57,18 @@ export class ConsensusUtil {
   }
 
   getConsensusGenome(): consensus_fasta_genomes {
-    if (this.countMap.size === 0) throw new Error("No input given");
+    if (this.countMap.size === 0)
+      toast.error("No genomes Given.", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
 
     const entries = Array.from(this.countMap.entries()).sort(
       (a, b) => b[1] - a[1],
